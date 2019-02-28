@@ -64,9 +64,10 @@ With objDoc
 
 End With
 
-objword.Visible = True
-objword.Activate
+objword.Visible = False
 objword.DisplayAlerts = 0
+
+objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & ws.Range("a" & rw.Row).Value & ".docx")
 
 Set objDoc = Nothing
 Set objword = Nothing
