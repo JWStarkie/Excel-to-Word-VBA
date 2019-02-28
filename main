@@ -41,13 +41,15 @@ header_first = False
 
 Else
 
+On Error Resume Next
+Set objword = GetObject(, "Word.Application")
+
+If objword Is Nothing Then
 Set objword = CreateObject("Word.Application")
-objword.Visible = False
- 
- Prompt User
-MsgBox "Generating Word Document", vbExclamation, "Word"
-Application.ScreenUpdating = False
- 
+End If
+
+On Error GoTo 0
+  
 'Copy to word
 Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx")   'The link to the template word file
   
@@ -60,12 +62,11 @@ With objDoc
 .Bookmarks("Examiner").Range.Text = ws.Range("c" & rw.Row).Value
 .Bookmarks("ElancoRep").Range.Text = ws.Range("d" & rw.Row).Value
 
-If !ws.Range("a" & rw.Row).Value = "" Then
-saveFile = ws.Range("a" & rw.Row).Value
-objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & saveFile & ".docx")
-End If
-
 End With
+
+objword.Visible = True
+objword.Activate
+objword.DisplayAlerts = 0
 
 Set objDoc = Nothing
 Set objword = Nothing
