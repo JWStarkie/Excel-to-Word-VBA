@@ -8,8 +8,8 @@ Set ws = Worksheets("Sheet1") 'If you are using multiple sheets
 Dim objword As Object
 Dim objDoc As Object
 
- Dim rw As Range
- Dim rowCount As Range
+Dim rw As Range
+Dim rowCount As Range
 
 Dim header_first As Boolean
 
@@ -53,6 +53,7 @@ objword.DisplayAlerts = 0
 objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & ws.Range("a" & rw.Row).Value & ".docx")
 
 Set objDoc = Nothing
+objword.Quit
 Set objword = Nothing
 
 End If
@@ -105,3 +106,4 @@ Application.EnableEvents = False
 Workbooks("Test Output Data.xlsx").Close SaveChanges:=True
 
 End Sub
+
