@@ -1,20 +1,3 @@
-Sub Worksheet_Change(ByVal Target As Range)
-    Dim KeyCells As Range
-
-    ' The variable KeyCells contains the cells that will
-    ' cause an alert when they are changed.
-    Set KeyCells = Range("A1:A1000")
-    
-    If Not Application.Intersect(KeyCells, Target.Worksheet.Range(Target.Address)) _
-           Is Nothing Then
-
-        ' Display a message when one of the designated cells has been
-        ' changed.
-        ' Place your code here.
-        MsgBox "Cell " & Target.Address & " has changed."
-       
-    End If
-End Sub
 Sub CreateWord()
  
 ' Set up variables
@@ -75,4 +58,50 @@ Set objword = Nothing
 End If
   Next
   
+  copyData
+  
+End Sub
+
+Sub copyData()
+Dim wsCopy As Worksheet
+Dim wsDest As Worksheet
+Dim lCopyLastRow As Long
+Dim lDestLastRow As Long
+
+openWorkbook
+
+  'Set variables for copy and destination sheets
+  Set wsCopy = Workbooks("Test Data Source.xlsm").Worksheets("Sheet1")
+  Set wsDest = Workbooks("Test Output Data.xlsx").Worksheets("Sheet1")
+    
+  '1. Find last used row in the copy range based on data in column A
+  lCopyLastRow = wsCopy.Cells(wsCopy.Rows.count, "A").End(xlUp).Row
+    
+  '2. Find first blank row in the destination range based on data in column A
+  'Offset property moves down 1 row
+  lDestLastRow = wsDest.Cells(wsDest.Rows.count, "A").End(xlUp).Offset(1).Row
+
+  '3. Copy & Paste Data
+  wsCopy.Range("A2:D" & lCopyLastRow).Copy _
+    wsDest.Range("A" & lDestLastRow)
+    
+  'Optional - Select the destination sheet
+  wsDest.Activate
+
+closeWorkbook
+
+End Sub
+
+Sub openWorkbook()
+
+Workbooks.Open "C:\Users\c268249\Box Sync\FSP Project\Test Output Data.xlsx"
+
+End Sub
+
+Sub closeWorkbook()
+
+Application.DisplayAlerts = False
+Application.EnableEvents = False
+Workbooks("Test Output Data.xlsx").Close SaveChanges:=True
+
 End Sub
