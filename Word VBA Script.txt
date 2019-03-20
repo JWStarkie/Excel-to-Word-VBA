@@ -9,9 +9,10 @@ strCellString = Left(oCell.Range.Text, Len(oCell.Range.Text) - 2)
 
 If strCellString <> "" Then
 
-If strCellString = "0" Then
-oCell.Shading.ForegroundPatternColor = wdColorRed
+If strCellString = "0%" Then
+oCell.Shading.ForegroundPatternColor = wdColorDarkRed
 oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
 End If
 End If
 Next
