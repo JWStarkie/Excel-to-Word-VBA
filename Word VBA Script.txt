@@ -1,0 +1,18 @@
+Sub conditionalFormat()
+
+Dim oCell As Word.Cell
+Dim strCellString As String
+
+For Each oCell In ActiveDocument.Tables(1).Range.Cells
+
+strCellString = Left(oCell.Range.Text, Len(oCell.Range.Text) - 2)
+
+If strCellString <> "" Then
+
+If strCellString = "0" Then
+oCell.Shading.ForegroundPatternColor = wdColorRed
+oCell.Range.Font.TextColor = wdColorWhite
+End If
+End If
+Next
+End Sub
