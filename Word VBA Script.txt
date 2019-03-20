@@ -1,19 +1,35 @@
 Sub conditionalFormat()
 
 Dim oCell As Word.Cell
-Dim strCellString As String
+Dim oColumn As Word.Column
 
-For Each oCell In ActiveDocument.Tables(1).Range.Cells
+For intI = 2 To 5
+Set oColumn = ActiveDocument.Tables(intI).Range.Columns(3)
 
-strCellString = Left(oCell.Range.Text, Len(oCell.Range.Text) - 2)
+For Each oCell In oColumn.Cells
 
-If strCellString <> "" Then
+If IsNumeric(Left(oCell.Range.Text, Len(oCell.Range.Text) - 2)) Then
 
-If strCellString = "0%" Then
-oCell.Shading.ForegroundPatternColor = wdColorDarkRed
+If Val(oCell.Range.Text) < 33.3 Then
+oCell.Shading.ForegroundPatternColor = wdColorRed
 oCell.Range.Font.TextColor = wdColorWhite
 oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter Text:="%"
+ElseIf Val(oCell.Range.Text) > 33.3 And Val(oCell.Range.Text) < 66.6 Then
+oCell.Shading.ForegroundPatternColor = wdColorLightOrange
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter Text:="%"
+ElseIf Val(oCell.Range.Text) > 66.6 Then
+oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter Text:="%"
 End If
 End If
+
 Next
+Next intI
 End Sub
+
+ 
