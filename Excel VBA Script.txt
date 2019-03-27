@@ -1,63 +1,84 @@
 Sub CreateWord()
- 
+  
 ' Set up variables
 Dim ws As Worksheet
+Dim wsComments As Worksheet
  
-Set ws = Worksheets("Sheet1") 'If you are using multiple sheets
+' If you are using multiple sheets
+Set ws = Worksheets("Sheet1")
+Set wsComments = Worksheets("Sheet2")
 
 Dim objword As Object
 Dim objDoc As Object
 
+Dim oTable As Word.Table
+
 Dim rw As Range
-Dim rowCount As Range
+
 
 Dim header_first As Boolean
 
-Dim saveFile As String
+Dim text As String
 
 header_first = True
 
 For Each rw In ws.UsedRange.Rows
-
-If header_first = True Then
-header_first = False
+    ' to skip the header row
+    If header_first = True Then
+    header_first = False
 
 Else
 
-On Error Resume Next
-Set objword = GetObject(, "Word.Application")
+    On Error Resume Next
+    Set objword = GetObject(, "Word.Application")
 
-If objword Is Nothing Then
-Set objword = CreateObject("Word.Application")
-End If
+        If objword Is Nothing Then
+            Set objword = CreateObject("Word.Application")
+        End If
 
-On Error GoTo 0
+    On Error GoTo 0
   
-'Copy to word
-Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx")   'The link to the template word file
+    'Copy to word
+    Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx")   'The link to the template word file
   
-With objDoc
+    With objDoc
 
-.Bookmarks("FarmNameRef").Range.Text = ws.Range("a" & rw.Row).Value
-'will use the data inside the cell as it is. Repeat as many columns as you need
-.Bookmarks("Date").Range.Text = ws.Range("b" & rw.Row).Value 'as currency with thousand separators and decimals (you can skip the decimals)
-'.Bookmarks("Examiner").Range.Text = Date    inserts today date automatically
-.Bookmarks("Examiner").Range.Text = ws.Range("c" & rw.Row).Value
-.Bookmarks("ElancoRep").Range.Text = ws.Range("d" & rw.Row).Value
+        .Bookmarks("FarmNameRef").Range.text = ws.Range("a" & rw.Row).Value
+        'will use the data inside the cell as it is. Repeat as many columns as you need
+        .Bookmarks("Date").Range.text = ws.Range("b" & rw.Row).Value 'as currency with thousand separators and decimals (you can skip the decimals)
+        '.Bookmarks("Examiner").Range.Text = Date    inserts today date automatically
+        .Bookmarks("Examiner").Range.text = ws.Range("c" & rw.Row).Value
+        .Bookmarks("ElancoRep").Range.text = ws.Range("d" & rw.Row).Value
+        
+        'Reference the table.
+        Set oTable = .Bookmarks("Com1").Range.Tables(1)
+    
+        With oTable
+    
+            ' Loop for multiple comments - rows
+            For Each rwComments In wsComments.UsedRange.Rows
+            ' .Bookmarks("Com1").Range.Table(8).Cell.Text = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
+            ' .Cell(1, 1).Range.InsertAfter = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
+            text = text & wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
+            
+            Debug.Print "Hello!!"
+            Next rwComments
+            
+            .Cell(1, 1).Range.InsertAfter text
+        End With
+    End With
 
-End With
+    objword.Visible = False
+    objword.DisplayAlerts = 0
+    
+    objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & ws.Range("a" & rw.Row).Value & ".docx")
+    
+    Set objDoc = Nothing
+    objword.Quit
+    Set objword = Nothing
 
-objword.Visible = False
-objword.DisplayAlerts = 0
-
-objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & ws.Range("a" & rw.Row).Value & ".docx")
-
-Set objDoc = Nothing
-objword.Quit
-Set objword = Nothing
-
-End If
-  Next
+    End If
+  Next rw
   
   copyData
   
