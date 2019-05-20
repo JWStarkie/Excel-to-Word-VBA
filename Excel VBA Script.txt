@@ -11,7 +11,12 @@ Set wsComments = Worksheets("Sheet2")
 Dim objword As Object
 Dim objDoc As Object
 
+Dim tally As Integer
+
+' Word Objects
 Dim oTable As Word.Table
+Dim oCell As Word.Cell
+Dim oColumn As Word.Column
 
 Dim rw As Range
 
@@ -43,12 +48,12 @@ Else
   
     With objDoc
 
-        .Bookmarks("FarmNameRef").Range.text = ws.Range("a" & rw.Row).Value
+        .Bookmarks("FarmNameRef").Range.text = ws.Range("d" & rw.Row).Value
         'will use the data inside the cell as it is. Repeat as many columns as you need
-        .Bookmarks("Date").Range.text = ws.Range("b" & rw.Row).Value 'as currency with thousand separators and decimals (you can skip the decimals)
+        .Bookmarks("Date").Range.text = ws.Range("c" & rw.Row).Value 'as currency with thousand separators and decimals (you can skip the decimals)
         '.Bookmarks("Examiner").Range.Text = Date    inserts today date automatically
-        .Bookmarks("Examiner").Range.text = ws.Range("c" & rw.Row).Value
-        .Bookmarks("ElancoRep").Range.text = ws.Range("d" & rw.Row).Value
+        .Bookmarks("Examiner").Range.text = ws.Range("e" & rw.Row).Value
+        .Bookmarks("ElancoRep").Range.text = ws.Range("f" & rw.Row).Value
         
         'Reference the table.
         Set oTable = .Bookmarks("Com1").Range.Tables(1)
@@ -66,18 +71,78 @@ Else
             
             .Cell(1, 1).Range.InsertAfter text
         End With
+        
+        'First set of tables
+For intI = 2 To 5
+Set oColumn = ActiveDocument.Tables(intI).Range.Columns(3)
+
+For Each oCell In oColumn.Cells
+
+If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
+
+If Val(oCell.Range.text) < 55 Then
+oCell.Shading.ForegroundPatternColor = wdColorRed
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
+oCell.Shading.ForegroundPatternColor = wdColorLightOrange
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+ElseIf Val(oCell.Range.text) > 75 Then
+oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+End If
+End If
+
+Next
+Next intI
+
+'Analysis set of tables
+For intI = 8 To 28 Step 3
+Set oColumn = ActiveDocument.Tables(intI).Range.Columns(4)
+
+For Each oCell In oColumn.Cells
+
+If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
+
+If Val(oCell.Range.text) < 33.3 Then
+oCell.Shading.ForegroundPatternColor = wdColorRed
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+ElseIf Val(oCell.Range.text) > 33.3 And Val(oCell.Range.text) < 66.6 Then
+oCell.Shading.ForegroundPatternColor = wdColorLightOrange
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+ElseIf Val(oCell.Range.text) > 66.6 Then
+oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
+oCell.Range.Font.TextColor = wdColorWhite
+oCell.Range.Font.Bold = True
+oCell.Range.InsertAfter text:="%"
+End If
+End If
+
+Next
+Next intI
+        
     End With
 
     objword.Visible = False
     objword.DisplayAlerts = 0
     
-    objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\" & ws.Range("a" & rw.Row).Value & ".docx")
+    objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\Farm " & tally & ".docx")
     
     Set objDoc = Nothing
     objword.Quit
     Set objword = Nothing
 
     End If
+  tally = tally + 1
   Next rw
   
   copyData
@@ -127,4 +192,3 @@ Application.EnableEvents = False
 Workbooks("Test Output Data.xlsx").Close SaveChanges:=True
 
 End Sub
-
