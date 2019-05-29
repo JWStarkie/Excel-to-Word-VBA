@@ -12,4 +12,4 @@ Create form button and link to the CreateWord() Sub
 
 ## Word VBA Script.txt
 
-This should *NOT* be modified as this needs to be attached to the template report document in order to work
+This should is *no longer needed* as all scripts have now been added to the Excel Script - storing here for version control
