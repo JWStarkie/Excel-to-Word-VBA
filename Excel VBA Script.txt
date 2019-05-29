@@ -52,6 +52,12 @@ Sub CreateWord()
                 '.Bookmarks("Examiner").Range.Text = Date    inserts today date automatically
                 .Bookmarks("Examiner").Range.text = ws.Range("e" & rw.Row).Value
                 .Bookmarks("ElancoRep").Range.text = ws.Range("f" & rw.Row).Value
+                .Bookmarks("mgmtSys").Range.text = ws.Range("g" & rw.Row).Value
+                .Bookmarks("noHouse").Range.text = ws.Range("i" & rw.Row).Value
+                .Bookmarks("noBirds").Range.text = ws.Range("j" & rw.Row).Value
+                .Bookmarks("noStaff").Range.text = ws.Range("k" & rw.Row).Value
+                .Bookmarks("shedAge").Range.text = ws.Range("l" & rw.Row).Value
+                .Bookmarks("birdAge").Range.text = ws.Range("m" & rw.Row).Value
         
                 'Reference the table.
                 Set oTable = .Bookmarks("Com1").Range.Tables(1)
@@ -63,8 +69,7 @@ Sub CreateWord()
                         ' .Bookmarks("Com1").Range.Table(8).Cell.Text = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
                         ' .Cell(1, 1).Range.InsertAfter = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
                         text = text & wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
-            
-                        Debug.Print "Hello!!"
+
                     Next rwComments
             
                     .Cell(1, 1).Range.InsertAfter text
@@ -95,67 +100,67 @@ End Sub
 
 Sub conditionalFormat()
 
-' Word Objects
-Dim oCell As Word.Cell
-Dim oColumn As Word.Column
+    ' Word Objects
+    Dim oCell As Word.Cell
+    Dim oColumn As Word.Column
 
-'First set of tables
-For intI = 2 To 5
-Set oColumn = ActiveDocument.Tables(intI).Range.Columns(3)
+    'First set of tables
+    For intI = 2 To 5
+        Set oColumn = ActiveDocument.Tables(intI).Range.Columns(3)
 
- For Each oCell In oColumn.Cells
+        For Each oCell In oColumn.Cells
 
- If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
+            If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
 
- If Val(oCell.Range.text) < 55 Then
-oCell.Shading.ForegroundPatternColor = wdColorRed
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
-oCell.Shading.ForegroundPatternColor = wdColorLightOrange
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-ElseIf Val(oCell.Range.text) > 75 Then
-oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-End If
-End If
+                If Val(oCell.Range.text) < 55 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorRed
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorLightOrange
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                ElseIf Val(oCell.Range.text) > 75 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                End If
+            End If
 
- Next
-Next intI
+        Next
+    Next intI
 
- 'Analysis set of tables
-For intI = 8 To 28 Step 3
-Set oColumn = ActiveDocument.Tables(intI).Range.Columns(4)
+    'Analysis set of tables
+    For intI = 8 To 28 Step 3
+        Set oColumn = ActiveDocument.Tables(intI).Range.Columns(4)
 
- For Each oCell In oColumn.Cells
+        For Each oCell In oColumn.Cells
 
- If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
+            If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
 
- If Val(oCell.Range.text) < 33.3 Then
-oCell.Shading.ForegroundPatternColor = wdColorRed
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-ElseIf Val(oCell.Range.text) > 33.3 And Val(oCell.Range.text) < 66.6 Then
-oCell.Shading.ForegroundPatternColor = wdColorLightOrange
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-ElseIf Val(oCell.Range.text) > 66.6 Then
-oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
-oCell.Range.Font.TextColor = wdColorWhite
-oCell.Range.Font.Bold = True
-oCell.Range.InsertAfter text:="%"
-End If
-End If
+                If Val(oCell.Range.text) < 33.3 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorRed
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                ElseIf Val(oCell.Range.text) > 33.3 And Val(oCell.Range.text) < 66.6 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorLightOrange
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                ElseIf Val(oCell.Range.text) > 66.6 Then
+                    oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
+                    oCell.Range.Font.TextColor = wdColorWhite
+                    oCell.Range.Font.Bold = True
+                    oCell.Range.InsertAfter text:="%"
+                End If
+            End If
 
- Next
-Next intI
+        Next
+    Next intI
 
 End Sub
 
@@ -202,5 +207,3 @@ Sub closeWorkbook()
     Workbooks("Test Output Data.xlsx").Close SaveChanges:=True
                     
 End Sub
-
-
