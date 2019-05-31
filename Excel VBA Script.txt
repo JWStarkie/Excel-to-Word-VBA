@@ -1,3 +1,42 @@
+Sub clearFields()
+    
+    Dim usedrng As Range
+    Dim usedRangeLastColNum
+    Dim usedrangelastrow
+    
+    Application.ScreenUpdating = False
+
+    For Each usedrng In ActiveSheet.UsedRange
+        If usedrng.MergeCells = True Then
+            If usedrng.Value = "" Then
+                usedrng.Value = ""
+            End If
+        Else
+            If usedrng.Value = "" Then
+                usedrng.ClearContents
+            End If
+        End If
+    Next
+    
+    ActiveSheet.UsedRange
+    usedRangeLastColNum = ActiveSheet.UsedRange.Columns.count
+    usedrangelastrow = ActiveSheet.UsedRange.Rows.count
+    
+    For r = usedrangelastrow To 1 Step -1
+        If Application.WorksheetFunction.CountA(Cells(r, usedRangeLastColNum).EntireRow) <> 0 Then
+            Exit For
+        Else
+            Cells(r, usedRangeLastColNum).EntireRow.Delete
+        End If
+    Next r
+    
+
+    
+    ActiveSheet.UsedRange
+    Application.ScreenUpdating = True
+    
+End Sub
+
 Sub CreateWord()
   
     ' Set up variables
@@ -12,7 +51,7 @@ Sub CreateWord()
     Dim objDoc As Object
     Dim tally As Integer
 
-    tally = 1
+    tally = 2
 
     Dim oTable As Word.Table
 
@@ -32,6 +71,8 @@ Sub CreateWord()
 
         Else
 
+            Call nextCalculation(tally)
+            
             On Error Resume Next
             Set objword = GetObject(, "Word.Application")
 
@@ -42,14 +83,13 @@ Sub CreateWord()
             On Error GoTo 0
   
             'Copy to word
-            Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx") 'The link to the template word file
+            Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx")
+            'The link to the template word file
   
             With objDoc
 
                 .Bookmarks("FarmNameRef").Range.text = ws.Range("d" & rw.Row).Value
-                'will use the data inside the cell as it is. Repeat as many columns as you need
-                .Bookmarks("Date").Range.text = ws.Range("c" & rw.Row).Value 'as currency with thousand separators and decimals (you can skip the decimals)
-                '.Bookmarks("Examiner").Range.Text = Date    inserts today date automatically
+                .Bookmarks("Date").Range.text = ws.Range("c" & rw.Row).Value
                 .Bookmarks("Examiner").Range.text = ws.Range("e" & rw.Row).Value
                 .Bookmarks("ElancoRep").Range.text = ws.Range("f" & rw.Row).Value
                 .Bookmarks("mgmtSys").Range.text = ws.Range("g" & rw.Row).Value
@@ -66,24 +106,25 @@ Sub CreateWord()
     
                     ' Loop for multiple comments - rows
                     For Each rwComments In wsComments.UsedRange.Rows
-                        ' .Bookmarks("Com1").Range.Table(8).Cell.Text = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
-                        ' .Cell(1, 1).Range.InsertAfter = wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
+                    
                         text = text & wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
 
                     Next rwComments
             
                     .Cell(1, 1).Range.InsertAfter text
                     
-                    conditionalFormat
+                    Call conditionalFormat(objword)
                     
                 End With
             End With
 
+            Application.Wait (Now + TimeValue("0:00:5"))
+            
             objword.Visible = False
             objword.DisplayAlerts = 0
-    
-            objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\Farm " & tally & ".docx")
-    
+            
+            objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\Farm " & tally - 1 & ".docx")
+     
             Set objDoc = Nothing
             objword.Quit
             Set objword = Nothing
@@ -91,6 +132,8 @@ Sub CreateWord()
             tally = tally + 1
     
         End If
+       
+       Application.Wait (Now + TimeValue("0:00:5"))
      
     Next rw
   
@@ -98,7 +141,27 @@ Sub CreateWord()
   
 End Sub
 
-Sub conditionalFormat()
+Function nextCalculation(currentRow As Integer)
+   
+    Dim SourceRange As Range
+    Dim dynamRange As String
+    
+    dynamRange = "N" & currentRow & ":DE" & currentRow
+ 
+    Set SourceRange = Range(dynamRange)
+    
+        Sheets("Sheet1").Activate
+        SourceRange.Copy
+        Sheets("Calculations").Activate
+        Range("F3:F98").Select
+        Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:=False, Transpose:=True
+ 
+        Application.CutCopyMode = False
+                    
+        Sheets("Sheet1").Activate
+        
+End Function
+Function conditionalFormat(objword As Object)
 
     ' Word Objects
     Dim oCell As Word.Cell
@@ -106,7 +169,7 @@ Sub conditionalFormat()
 
     'First set of tables
     For intI = 2 To 5
-        Set oColumn = ActiveDocument.Tables(intI).Range.Columns(3)
+        Set oColumn = objword.ActiveDocument.Tables(intI).Range.Columns(3)
 
         For Each oCell In oColumn.Cells
 
@@ -135,7 +198,7 @@ Sub conditionalFormat()
 
     'Analysis set of tables
     For intI = 8 To 28 Step 3
-        Set oColumn = ActiveDocument.Tables(intI).Range.Columns(4)
+        Set oColumn = objword.ActiveDocument.Tables(intI).Range.Columns(4)
 
         For Each oCell In oColumn.Cells
 
@@ -162,7 +225,7 @@ Sub conditionalFormat()
         Next
     Next intI
 
-End Sub
+End Function
 
 Sub copyData()
     Dim wsCopy As Worksheet
