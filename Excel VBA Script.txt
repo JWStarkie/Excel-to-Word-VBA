@@ -22,15 +22,9 @@ Sub clearFields()
     usedRangeLastColNum = ActiveSheet.UsedRange.Columns.count
     usedrangelastrow = ActiveSheet.UsedRange.Rows.count
     
-    For r = usedrangelastrow To 1 Step -1
-        If Application.WorksheetFunction.CountA(Cells(r, usedRangeLastColNum).EntireRow) <> 0 Then
-            Exit For
-        Else
+    For r = usedrangelastrow To 7 Step -1
             Cells(r, usedRangeLastColNum).EntireRow.Delete
-        End If
     Next r
-    
-
     
     ActiveSheet.UsedRange
     Application.ScreenUpdating = True
