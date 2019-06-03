@@ -22,8 +22,12 @@ Sub clearFields()
     usedRangeLastColNum = ActiveSheet.UsedRange.Columns.count
     usedrangelastrow = ActiveSheet.UsedRange.Rows.count
     
-    For r = usedrangelastrow To 7 Step -1
+    For r = usedrangelastrow To 1 Step -1
+        If Application.WorksheetFunction.CountA(Cells(r, usedRangeLastColNum).EntireRow) <> 0 Then
+            Exit For
+        Else
             Cells(r, usedRangeLastColNum).EntireRow.Delete
+        End If
     Next r
     
     ActiveSheet.UsedRange
@@ -36,10 +40,11 @@ Sub CreateWord()
     ' Set up variables
     Dim ws As Worksheet
     Dim wsComments As Worksheet
+    Dim wsCalc As Worksheet
  
     ' If you are using multiple sheets
-    Set ws = Worksheets("Sheet1")
-    Set wsComments = Worksheets("Sheet2")
+    Set ws = Worksheets("Input")
+    Set wsCalc = Worksheets("Calculations")
 
     Dim objword As Object
     Dim objDoc As Object
@@ -47,10 +52,10 @@ Sub CreateWord()
 
     tally = 2
 
-    Dim oTable As Word.Table
-
     Dim rw As Range
-
+    
+    Dim commentText As String
+    Dim explanationText As String
 
     Dim header_first As Boolean
 
@@ -77,7 +82,7 @@ Sub CreateWord()
             On Error GoTo 0
   
             'Copy to word
-            Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Test Report.dotx")
+            Set objDoc = objword.Documents.Add("C:\Users\c268249\Box Sync\FSP Project\Farm Data\Farm Report Template.dotx")
             'The link to the template word file
   
             With objDoc
@@ -92,24 +97,45 @@ Sub CreateWord()
                 .Bookmarks("noStaff").Range.text = ws.Range("k" & rw.Row).Value
                 .Bookmarks("shedAge").Range.text = ws.Range("l" & rw.Row).Value
                 .Bookmarks("birdAge").Range.text = ws.Range("m" & rw.Row).Value
-        
-                'Reference the table.
-                Set oTable = .Bookmarks("Com1").Range.Tables(1)
-    
-                With oTable
-    
-                    ' Loop for multiple comments - rows
-                    For Each rwComments In wsComments.UsedRange.Rows
-                    
-                        text = text & wsComments.Range("a" & rwComments.Row).Value & vbNewLine & wsComments.Range("b" & rwComments.Row).Value
-
-                    Next rwComments
-            
-                    .Cell(1, 1).Range.InsertAfter text
-                    
-                    Call conditionalFormat(objword)
-                    
-                End With
+                .Bookmarks("exec1").Range.text = wsCalc.Range("H1").Value
+                .Bookmarks("exec2").Range.text = wsCalc.Range("K3").Value
+                .Bookmarks("exec3").Range.text = wsCalc.Range("K17").Value
+                .Bookmarks("exec4").Range.text = wsCalc.Range("K28").Value
+                .Bookmarks("exec5").Range.text = wsCalc.Range("K59").Value
+                .Bookmarks("exec6").Range.text = wsCalc.Range("K71").Value
+                .Bookmarks("exec7").Range.text = wsCalc.Range("K87").Value
+                .Bookmarks("exec8").Range.text = wsCalc.Range("K93").Value
+                .Bookmarks("res1").Range.text = wsCalc.Range("K3").Value
+                .Bookmarks("res2").Range.text = wsCalc.Range("K17").Value
+                .Bookmarks("res3").Range.text = wsCalc.Range("K28").Value
+                .Bookmarks("res4").Range.text = wsCalc.Range("K59").Value
+                .Bookmarks("res5").Range.text = wsCalc.Range("K71").Value
+                .Bookmarks("res6").Range.text = wsCalc.Range("K87").Value
+                .Bookmarks("res7").Range.text = wsCalc.Range("K93").Value
+                
+                Call conditionalFormat(objword)
+                
+                ' Question 1.1 comments and explanations
+                Call commentsExplanations(objDoc, 3, 16, "Com1", "Exp1")
+                
+                ' Question 1.2 comments and explanations
+                Call commentsExplanations(objDoc, 17, 27, "Com2", "Exp2")
+                
+                ' Question 1.3 comments and explanations
+                Call commentsExplanations(objDoc, 28, 58, "Com3", "Exp3")
+                
+                ' Question 2.1 comments and explanations
+                Call commentsExplanations(objDoc, 59, 70, "Com4", "Exp4")
+                
+                ' Question 2.2 comments and explanations
+                Call commentsExplanations(objDoc, 71, 86, "Com5", "Exp5")
+                
+                ' Question 2.3 comments and explanations
+                Call commentsExplanations(objDoc, 87, 92, "Com6", "Exp6")
+                
+                ' Question 3.1 comments and explanations
+                Call commentsExplanations(objDoc, 93, 98, "Com7", "Exp7")
+                
             End With
 
             Application.Wait (Now + TimeValue("0:00:5"))
@@ -117,7 +143,19 @@ Sub CreateWord()
             objword.Visible = False
             objword.DisplayAlerts = 0
             
-            objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\Farm " & tally - 1 & ".docx")
+            ' Remove special characters from the Farm name
+            Static SpecialCharacters As String
+            Dim newString As String
+            Dim char As Variant
+            
+            SpecialCharacters = "!,@,#,$,%,^,&,*,(,),{,[,],},?,/"
+            newString = ws.Range("d" & rw.Row).Value
+            
+            For Each char In Split(SpecialCharacters, ",")
+                newString = Replace(newString, char, " ")
+            Next
+            
+            objDoc.SaveAs ("C:\Users\c268249\Box Sync\FSP Project\Farm Data\Reports\" & newString & ".docx")
      
             Set objDoc = Nothing
             objword.Quit
@@ -127,12 +165,14 @@ Sub CreateWord()
     
         End If
        
-       Application.Wait (Now + TimeValue("0:00:5"))
+        Application.Wait (Now + TimeValue("0:00:5"))
      
     Next rw
   
     copyData
-  
+    
+    MsgBox "All reports have been created and stored in the Reports folder." & vbNewLine & "All data has been copied to the other workbook for analysis." & vbNewLine & "Please feel free to review all documents."
+    
 End Sub
 
 Function nextCalculation(currentRow As Integer)
@@ -144,17 +184,43 @@ Function nextCalculation(currentRow As Integer)
  
     Set SourceRange = Range(dynamRange)
     
-        Sheets("Sheet1").Activate
-        SourceRange.Copy
-        Sheets("Calculations").Activate
-        Range("F3:F98").Select
-        Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:=False, Transpose:=True
+    Sheets("Input").Activate
+    SourceRange.Copy
+    Sheets("Calculations").Activate
+    Range("F3:F98").Select
+    Selection.PasteSpecial Paste:=xlPasteAll, Operation:=xlNone, SkipBlanks:=False, Transpose:=True
  
-        Application.CutCopyMode = False
+    Application.CutCopyMode = False
                     
-        Sheets("Sheet1").Activate
+    Sheets("Input").Activate
         
 End Function
+
+Function commentsExplanations(objDoc As Object, startPoint As Integer, endPoint As Integer, comBookmark As String, expBookmark As String)
+    
+    Dim wsCalc As Worksheet
+    Set wsCalc = Worksheets("Calculations")
+        
+    For intI = startPoint To endPoint
+    
+        If wsCalc.Range("F" & intI).Value = 0 Then
+            If wsCalc.Range("O" & intI).Value <> "" Then
+                commentText = commentText & wsCalc.Range("M" & intI).Value & vbNewLine
+                explanationText = explanationText & wsCalc.Range("O" & intI).Value & vbNewLine
+            End If
+        ElseIf wsCalc.Range("F" & intI).Value = 3 Then
+            If wsCalc.Range("AS" & intI).Value <> "" Then
+                commentText = commentText & wsCalc.Range("N" & intI).Value & vbNewLine
+                explanationText = explanationText & wsCalc.Range("AS" & intI).Value & vbNewLine
+            End If
+        End If
+    Next intI
+    
+    objDoc.Bookmarks(comBookmark).Range.text = commentText
+    objDoc.Bookmarks(expBookmark).Range.text = explanationText
+
+End Function
+
 Function conditionalFormat(objword As Object)
 
     ' Word Objects
@@ -198,17 +264,17 @@ Function conditionalFormat(objword As Object)
 
             If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
 
-                If Val(oCell.Range.text) < 33.3 Then
+                If Val(oCell.Range.text) < 55 Then
                     oCell.Shading.ForegroundPatternColor = wdColorRed
                     oCell.Range.Font.TextColor = wdColorWhite
                     oCell.Range.Font.Bold = True
                     oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 33.3 And Val(oCell.Range.text) < 66.6 Then
+                ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
                     oCell.Shading.ForegroundPatternColor = wdColorLightOrange
                     oCell.Range.Font.TextColor = wdColorWhite
                     oCell.Range.Font.Bold = True
                     oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 66.6 Then
+                ElseIf Val(oCell.Range.text) > 75 Then
                     oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
                     oCell.Range.Font.TextColor = wdColorWhite
                     oCell.Range.Font.Bold = True
@@ -230,8 +296,8 @@ Sub copyData()
     openWorkbook
                     
     'Set variables for copy and destination sheets
-    Set wsCopy = Workbooks("Test Data Source.xlsm").Worksheets("Sheet1")
-    Set wsDest = Workbooks("Test Output Data.xlsx").Worksheets("Sheet1")
+    Set wsCopy = Workbooks("Data Input - MASTER - Macro Enabled.xlsm").Worksheets("Input")
+    Set wsDest = Workbooks("Farm Analysis Data.xlsx").Worksheets("Output")
                     
     '1. Find last used row in the copy range based on data in column A
     lCopyLastRow = wsCopy.Cells(wsCopy.Rows.count, "A").End(xlUp).Row
@@ -241,9 +307,18 @@ Sub copyData()
     lDestLastRow = wsDest.Cells(wsDest.Rows.count, "A").End(xlUp).Offset(1).Row
                     
     '3. Copy & Paste Data
-    wsCopy.Range("A2:D" & lCopyLastRow).Copy _
-        wsDest.Range("A" & lDestLastRow)
+    wsCopy.Range("B2:D" & lCopyLastRow).Copy _
+        wsDest.Range("B" & lDestLastRow)
+    
+    wsCopy.Range("N2:BQ" & lCopyLastRow).Copy _
+        wsDest.Range("Q" & lDestLastRow)
+        
+    wsCopy.Range("BR2:CY" & lCopyLastRow).Copy _
+        wsDest.Range("BV" & lDestLastRow)
                     
+    wsCopy.Range("CZ2:DE" & lCopyLastRow).Copy _
+        wsDest.Range("DE" & lDestLastRow)
+        
     'Optional - Select the destination sheet
     wsDest.Activate
                     
@@ -253,7 +328,7 @@ End Sub
 
 Sub openWorkbook()
                     
-    Workbooks.Open "C:\Users\c268249\Box Sync\FSP Project\Test Output Data.xlsx"
+    Workbooks.Open "C:\Users\c268249\Box Sync\FSP Project\Farm Data\Data for Analysis\Farm Analysis Data.xlsx"
                     
 End Sub
 
@@ -261,6 +336,6 @@ Sub closeWorkbook()
                     
     Application.DisplayAlerts = False
     Application.EnableEvents = False
-    Workbooks("Test Output Data.xlsx").Close SaveChanges:=True
+    Workbooks("Farm Analysis Data.xlsx").Close SaveChanges:=True
                     
 End Sub
