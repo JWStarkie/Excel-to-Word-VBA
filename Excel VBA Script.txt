@@ -8,11 +8,11 @@ Sub clearFields()
 
     For Each usedrng In ActiveSheet.UsedRange
         If usedrng.MergeCells = True Then
-            If usedrng.Value = "" Then
-                usedrng.Value = ""
+            If usedrng.value = "" Then
+                usedrng.value = ""
             End If
         Else
-            If usedrng.Value = "" Then
+            If usedrng.value = "" Then
                 usedrng.ClearContents
             End If
         End If
@@ -87,33 +87,40 @@ Sub CreateWord()
   
             With objDoc
 
-                .Bookmarks("FarmNameRef").Range.text = ws.Range("d" & rw.Row).Value
-                .Bookmarks("Date").Range.text = ws.Range("c" & rw.Row).Value
-                .Bookmarks("Examiner").Range.text = ws.Range("e" & rw.Row).Value
-                .Bookmarks("ElancoRep").Range.text = ws.Range("f" & rw.Row).Value
-                .Bookmarks("mgmtSys").Range.text = ws.Range("g" & rw.Row).Value
-                .Bookmarks("noHouse").Range.text = ws.Range("i" & rw.Row).Value
-                .Bookmarks("noBirds").Range.text = ws.Range("j" & rw.Row).Value
-                .Bookmarks("noStaff").Range.text = ws.Range("k" & rw.Row).Value
-                .Bookmarks("shedAge").Range.text = ws.Range("l" & rw.Row).Value
-                .Bookmarks("birdAge").Range.text = ws.Range("m" & rw.Row).Value
-                .Bookmarks("exec1").Range.text = wsCalc.Range("H1").Value
-                .Bookmarks("exec2").Range.text = wsCalc.Range("K3").Value
-                .Bookmarks("exec3").Range.text = wsCalc.Range("K17").Value
-                .Bookmarks("exec4").Range.text = wsCalc.Range("K28").Value
-                .Bookmarks("exec5").Range.text = wsCalc.Range("K59").Value
-                .Bookmarks("exec6").Range.text = wsCalc.Range("K71").Value
-                .Bookmarks("exec7").Range.text = wsCalc.Range("K87").Value
-                .Bookmarks("exec8").Range.text = wsCalc.Range("K93").Value
-                .Bookmarks("res1").Range.text = wsCalc.Range("K3").Value
-                .Bookmarks("res2").Range.text = wsCalc.Range("K17").Value
-                .Bookmarks("res3").Range.text = wsCalc.Range("K28").Value
-                .Bookmarks("res4").Range.text = wsCalc.Range("K59").Value
-                .Bookmarks("res5").Range.text = wsCalc.Range("K71").Value
-                .Bookmarks("res6").Range.text = wsCalc.Range("K87").Value
-                .Bookmarks("res7").Range.text = wsCalc.Range("K93").Value
+                .Bookmarks("FarmNameRef").Range.text = ws.Range("d" & rw.Row).value
+                .Bookmarks("Date").Range.text = ws.Range("c" & rw.Row).value
+                .Bookmarks("Examiner").Range.text = ws.Range("e" & rw.Row).value
                 
-                Call conditionalFormat(objword)
+                If ws.Range("f" & rw.Row).value = 0 Then
+                    .Bookmarks("ElancoRep").Range.text = "N/A"
+                Else
+                    .Bookmarks("ElancoRep").Range.text = ws.Range("f" & rw.Row).value
+                End If
+                
+                .Bookmarks("mgmtSys").Range.text = ws.Range("g" & rw.Row).value
+                .Bookmarks("noHouse").Range.text = ws.Range("i" & rw.Row).value
+                .Bookmarks("noBirds").Range.text = ws.Range("j" & rw.Row).value
+                .Bookmarks("noStaff").Range.text = ws.Range("k" & rw.Row).value
+                .Bookmarks("shedAge").Range.text = ws.Range("l" & rw.Row).value
+                .Bookmarks("birdAge").Range.text = ws.Range("m" & rw.Row).value
+                .Bookmarks("exec1").Range.text = wsCalc.Range("H1").value
+                .Bookmarks("exec2").Range.text = wsCalc.Range("K3").value
+                .Bookmarks("exec3").Range.text = wsCalc.Range("K17").value
+                .Bookmarks("exec4").Range.text = wsCalc.Range("K28").value
+                .Bookmarks("exec5").Range.text = wsCalc.Range("K59").value
+                .Bookmarks("exec6").Range.text = wsCalc.Range("K71").value
+                .Bookmarks("exec7").Range.text = wsCalc.Range("K87").value
+                .Bookmarks("exec8").Range.text = wsCalc.Range("K93").value
+                .Bookmarks("res1").Range.text = wsCalc.Range("K3").value
+                .Bookmarks("res2").Range.text = wsCalc.Range("K17").value
+                .Bookmarks("res3").Range.text = wsCalc.Range("K28").value
+                .Bookmarks("res4").Range.text = wsCalc.Range("K59").value
+                .Bookmarks("res5").Range.text = wsCalc.Range("K71").value
+                .Bookmarks("res6").Range.text = wsCalc.Range("K87").value
+                .Bookmarks("res7").Range.text = wsCalc.Range("K93").value
+                
+                Call conditionalFormat(objword, 2, 5, 3, 1)
+                Call conditionalFormat(objword, 8, 28, 4, 3)
                 
                 ' Question 1.1 comments and explanations
                 Call commentsExplanations(objDoc, 3, 16, "Com1", "Exp1")
@@ -149,7 +156,7 @@ Sub CreateWord()
             Dim char As Variant
             
             SpecialCharacters = "!,@,#,$,%,^,&,*,(,),{,[,],},?,/"
-            newString = ws.Range("d" & rw.Row).Value
+            newString = ws.Range("d" & rw.Row).value
             
             For Each char In Split(SpecialCharacters, ",")
                 newString = Replace(newString, char, " ")
@@ -203,15 +210,15 @@ Function commentsExplanations(objDoc As Object, startPoint As Integer, endPoint 
         
     For intI = startPoint To endPoint
     
-        If wsCalc.Range("F" & intI).Value = 0 Then
-            If wsCalc.Range("O" & intI).Value <> "" Then
-                commentText = commentText & wsCalc.Range("M" & intI).Value & vbNewLine
-                explanationText = explanationText & wsCalc.Range("O" & intI).Value & vbNewLine
+        If wsCalc.Range("F" & intI).value = 0 Then
+            If wsCalc.Range("O" & intI).value <> "" Then
+                commentText = commentText & wsCalc.Range("M" & intI).value & vbNewLine
+                explanationText = explanationText & wsCalc.Range("O" & intI).value & vbNewLine
             End If
-        ElseIf wsCalc.Range("F" & intI).Value = 3 Then
-            If wsCalc.Range("AS" & intI).Value <> "" Then
-                commentText = commentText & wsCalc.Range("N" & intI).Value & vbNewLine
-                explanationText = explanationText & wsCalc.Range("AS" & intI).Value & vbNewLine
+        ElseIf wsCalc.Range("F" & intI).value = 3 Then
+            If wsCalc.Range("AS" & intI).value <> "" Then
+                commentText = commentText & wsCalc.Range("N" & intI).value & vbNewLine
+                explanationText = explanationText & wsCalc.Range("AS" & intI).value & vbNewLine
             End If
         End If
     Next intI
@@ -221,65 +228,69 @@ Function commentsExplanations(objDoc As Object, startPoint As Integer, endPoint 
 
 End Function
 
-Function conditionalFormat(objword As Object)
+Function conditionalFormat(objword As Object, startPoint As Integer, endPoint As Integer, column As Integer, step As Integer)
 
     ' Word Objects
     Dim oCell As Word.Cell
-    Dim oColumn As Word.Column
+    Dim oColumn As Word.column
+    Dim value As Integer
 
-    'First set of tables
-    For intI = 2 To 5
-        Set oColumn = objword.ActiveDocument.Tables(intI).Range.Columns(3)
-
-        For Each oCell In oColumn.Cells
-
-            If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
-
-                If Val(oCell.Range.text) < 55 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorRed
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorLightOrange
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 75 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                End If
-            End If
-
-        Next
-    Next intI
-
-    'Analysis set of tables
-    For intI = 8 To 28 Step 3
-        Set oColumn = objword.ActiveDocument.Tables(intI).Range.Columns(4)
+    'Analysing the tables
+    For intI = startPoint To endPoint Step step
+        Set oColumn = objword.ActiveDocument.Tables(intI).Range.Columns(column)
 
         For Each oCell In oColumn.Cells
 
+            value = Val(oCell.Range.text)
+            
             If IsNumeric(Left(oCell.Range.text, Len(oCell.Range.text) - 2)) Then
 
-                If Val(oCell.Range.text) < 55 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorRed
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 55 And Val(oCell.Range.text) < 75 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorLightOrange
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                ElseIf Val(oCell.Range.text) > 75 Then
-                    oCell.Shading.ForegroundPatternColor = wdColorSeaGreen
-                    oCell.Range.Font.TextColor = wdColorWhite
-                    oCell.Range.Font.Bold = True
-                    oCell.Range.InsertAfter text:="%"
-                End If
+                Select Case value
+
+                Case Is >= 90
+                    oCell.Shading.ForegroundPatternColor = RGB(12, 212, 72)
+                Case Is >= 85
+                    oCell.Shading.ForegroundPatternColor = RGB(53, 219, 60)
+                Case Is >= 80
+                    oCell.Shading.ForegroundPatternColor = RGB(93, 226, 48)
+                Case Is >= 75
+                    oCell.Shading.ForegroundPatternColor = RGB(133, 234, 36)
+                Case Is >= 70
+                    oCell.Shading.ForegroundPatternColor = RGB(174, 241, 24)
+                Case Is >= 65
+                    oCell.Shading.ForegroundPatternColor = RGB(215, 248, 12)
+                Case Is >= 60
+                    oCell.Shading.ForegroundPatternColor = RGB(235, 251, 6)
+                Case Is >= 55
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 234, 0)
+                Case Is >= 50
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 212, 0)
+                Case Is >= 45
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 191, 0)
+                Case Is >= 40
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 170, 0)
+                Case Is >= 35
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 149, 0)
+                Case Is >= 30
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 128, 0)
+                Case Is >= 25
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 106, 0)
+                Case Is >= 20
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 85, 0)
+                Case Is >= 15
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 64, 0)
+                Case Is >= 10
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 43, 0)
+                Case Is < 10
+                    oCell.Shading.ForegroundPatternColor = RGB(255, 0, 0)
+                    
+                End Select
+                
+                oCell.Range.Font.TextColor = wdColorWhite
+                oCell.Range.Font.Line.Visible = msoCTrue
+                oCell.Range.Font.Line.ForeColor.RGB = RGB(0, 0, 0)
+                oCell.Range.Font.Bold = True
+                oCell.Range.InsertAfter text:="%"
             End If
 
         Next
