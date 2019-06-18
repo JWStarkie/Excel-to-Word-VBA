@@ -326,8 +326,11 @@ Sub copyData()
     '2. Find first blank row in the destination range based on data in column A
     'Offset property moves down 1 row
     lDestLastRow = wsDest.Cells(wsDest.Rows.count, "A").End(xlUp).Offset(1).Row
-                    
+        
     '3. Copy & Paste Data
+    wsDest.Range("A" & lDestLastRow).value = Date
+    wsDest.Range("A" & lDestLastRow).NumberFormat = "dd/mm/yy"
+    
     wsCopy.Range("B2:D" & lCopyLastRow).Copy _
         wsDest.Range("B" & lDestLastRow)
     
@@ -360,3 +363,4 @@ Sub closeWorkbook()
     Workbooks("Farm Analysis Data.xlsx").Close SaveChanges:=True
                     
 End Sub
+
