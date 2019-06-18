@@ -224,12 +224,14 @@ Function commentsExplanations(objDoc As Object, startPoint As Integer, endPoint 
             If wsCalc.Range("P" & intI).value <> "" Then
                 explanationText = explanationText & wsCalc.Range("P" & intI).value & vbNewLine
             End If
-        ElseIf wsCalc.Range("K" & startPoint).value = 100 Then
-            If wsCalc.Range("Q" & endPoint).value <> "" Then
-                commentText = commentText & wsCalc.Range("Q" & endPoint).value & vbNewLine
-            End If
         End If
     Next intI
+    
+    If wsCalc.Range("K" & startPoint).value = 100 Then
+        If wsCalc.Range("Q" & endPoint).value <> "" Then
+            commentText = commentText & wsCalc.Range("Q" & endPoint).value & vbNewLine
+        End If
+    End If
     
     objDoc.Bookmarks(comBookmark).Range.text = commentText
     objDoc.Bookmarks(expBookmark).Range.text = explanationText
@@ -358,4 +360,3 @@ Sub closeWorkbook()
     Workbooks("Farm Analysis Data.xlsx").Close SaveChanges:=True
                     
 End Sub
-
