@@ -211,14 +211,22 @@ Function commentsExplanations(objDoc As Object, startPoint As Integer, endPoint 
     For intI = startPoint To endPoint
     
         If wsCalc.Range("F" & intI).value = 0 Then
-            If wsCalc.Range("O" & intI).value <> "" Then
+            If wsCalc.Range("M" & intI).value <> "" Then
                 commentText = commentText & wsCalc.Range("M" & intI).value & vbNewLine
+            End If
+            If wsCalc.Range("O" & intI).value <> "" Then
                 explanationText = explanationText & wsCalc.Range("O" & intI).value & vbNewLine
             End If
         ElseIf wsCalc.Range("F" & intI).value = 3 Then
-            If wsCalc.Range("AS" & intI).value <> "" Then
+            If wsCalc.Range("N" & intI).value <> "" Then
                 commentText = commentText & wsCalc.Range("N" & intI).value & vbNewLine
-                explanationText = explanationText & wsCalc.Range("AS" & intI).value & vbNewLine
+            End If
+            If wsCalc.Range("P" & intI).value <> "" Then
+                explanationText = explanationText & wsCalc.Range("P" & intI).value & vbNewLine
+            End If
+        ElseIf wsCalc.Range("K" & startPoint).value = 100 Then
+            If wsCalc.Range("Q" & endPoint).value <> "" Then
+                commentText = commentText & wsCalc.Range("Q" & endPoint).value & vbNewLine
             End If
         End If
     Next intI
@@ -247,41 +255,41 @@ Function conditionalFormat(objword As Object, startPoint As Integer, endPoint As
 
                 Select Case value
 
-                Case Is >= 90
+                    Case Is >= 90
                     oCell.Shading.ForegroundPatternColor = RGB(12, 212, 72)
-                Case Is >= 85
+                    Case Is >= 85
                     oCell.Shading.ForegroundPatternColor = RGB(53, 219, 60)
-                Case Is >= 80
+                    Case Is >= 80
                     oCell.Shading.ForegroundPatternColor = RGB(93, 226, 48)
-                Case Is >= 75
+                    Case Is >= 75
                     oCell.Shading.ForegroundPatternColor = RGB(133, 234, 36)
-                Case Is >= 70
+                    Case Is >= 70
                     oCell.Shading.ForegroundPatternColor = RGB(174, 241, 24)
-                Case Is >= 65
+                    Case Is >= 65
                     oCell.Shading.ForegroundPatternColor = RGB(215, 248, 12)
-                Case Is >= 60
+                    Case Is >= 60
                     oCell.Shading.ForegroundPatternColor = RGB(235, 251, 6)
-                Case Is >= 55
+                    Case Is >= 55
                     oCell.Shading.ForegroundPatternColor = RGB(255, 234, 0)
-                Case Is >= 50
+                    Case Is >= 50
                     oCell.Shading.ForegroundPatternColor = RGB(255, 212, 0)
-                Case Is >= 45
+                    Case Is >= 45
                     oCell.Shading.ForegroundPatternColor = RGB(255, 191, 0)
-                Case Is >= 40
+                    Case Is >= 40
                     oCell.Shading.ForegroundPatternColor = RGB(255, 170, 0)
-                Case Is >= 35
+                    Case Is >= 35
                     oCell.Shading.ForegroundPatternColor = RGB(255, 149, 0)
-                Case Is >= 30
+                    Case Is >= 30
                     oCell.Shading.ForegroundPatternColor = RGB(255, 128, 0)
-                Case Is >= 25
+                    Case Is >= 25
                     oCell.Shading.ForegroundPatternColor = RGB(255, 106, 0)
-                Case Is >= 20
+                    Case Is >= 20
                     oCell.Shading.ForegroundPatternColor = RGB(255, 85, 0)
-                Case Is >= 15
+                    Case Is >= 15
                     oCell.Shading.ForegroundPatternColor = RGB(255, 64, 0)
-                Case Is >= 10
+                    Case Is >= 10
                     oCell.Shading.ForegroundPatternColor = RGB(255, 43, 0)
-                Case Is < 10
+                    Case Is < 10
                     oCell.Shading.ForegroundPatternColor = RGB(255, 0, 0)
                     
                 End Select
@@ -350,3 +358,4 @@ Sub closeWorkbook()
     Workbooks("Farm Analysis Data.xlsx").Close SaveChanges:=True
                     
 End Sub
+
