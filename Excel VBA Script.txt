@@ -256,7 +256,7 @@ Function conditionalFormat(objword As Object, startPoint As Integer, endPoint As
                     Case Is > 80
                     oCell.Shading.ForegroundPatternColor = RGB(12, 212, 72)
                     Case Is >= 75
-                    oCell.Shading.ForegroundPatternColor = RGB(133, 234, 36)
+                    oCell.Shading.ForegroundPatternColor = RGB(190, 234, 20)
                     Case Is >= 65
                     oCell.Shading.ForegroundPatternColor = RGB(255, 234, 0)
                     Case Is >= 60
